@@ -1,0 +1,157 @@
+{
+  "n_vertices": 75,
+  "n_arrows": 822,
+  "vertices": [
+    "ACA",
+    "AI",
+    "AOB",
+    "AOBgr",
+    "AON",
+    "AUD",
+    "BLA",
+    "BMA",
+    "BS",
+    "CA1sp",
+    "CB",
+    "CBXmo",
+    "CNU",
+    "COA",
+    "CTXsp",
+    "CUL4",
+    "DORpm",
+    "DORsm",
+    "DP",
+    "ECT",
+    "EP",
+    "FN",
+    "FRP",
+    "GU",
+    "HB",
+    "HPF",
+    "HY",
+    "ILA",
+    "LA",
+    "LSX",
+    "LZ",
+    "MB",
+    "MBmot",
+    "MBsen",
+    "MEZ",
+    "MO",
+    "MY",
+    "MY-mot",
+    "MY-sat",
+    "MY-sen",
+    "OLF",
+    "ORB",
+    "P-mot",
+    "P-sat",
+    "P-sen",
+    "PA",
+    "PAA",
+    "PAL",
+    "PALc",
+    "PALm",
+    "PALv",
+    "PAR",
+    "PERI",
+    "PIR",
+    "PL",
+    "POST",
+    "PRE",
+    "PVR",
+    "PVZ",
+    "RHP",
+    "RSP",
+    "SNc",
+    "SS",
+    "STRv",
+    "SUB",
+    "TEa",
+    "TR",
+    "TT",
+    "VIS",
+    "VISC",
+    "VS",
+    "bgr",
+    "fiber tracts",
+    "root",
+    "sAMY"
+  ],
+  "sectors": {
+    "A": {
+      "rho": 15.884765452560629,
+      "n_edges": 806,
+      "n_stops": 8,
+      "B_shape": [
+        806,
+        806
+      ]
+    },
+    "B": {
+      "rho": 15.90802513443465,
+      "n_edges": 813,
+      "n_stops": 4,
+      "B_shape": [
+        813,
+        813
+      ]
+    },
+    "C": {
+      "rho": 15.934627278962852,
+      "n_edges": 814,
+      "n_stops": 4,
+      "B_shape": [
+        814,
+        814
+      ]
+    },
+    "D": {
+      "rho": 15.953398481807234,
+      "n_edges": 819,
+      "n_stops": 1,
+      "B_shape": [
+        819,
+        819
+      ]
+    }
+  },
+  "restriction_maps": {
+    "A->B": {
+      "delta_rho": 0.02325968187402161,
+      "delta_edges": 7,
+      "addition_type": "H\u2070-only",
+      "reversible": true
+    },
+    "A->C": {
+      "delta_rho": 0.04986182640222303,
+      "delta_edges": 8,
+      "addition_type": "H\u2070-only",
+      "reversible": true
+    },
+    "A->D": {
+      "delta_rho": 0.0686330292466053,
+      "delta_edges": 13,
+      "addition_type": "full A\u221e",
+      "reversible": true
+    },
+    "B->D": {
+      "delta_rho": 0.045373347372583694,
+      "delta_edges": 6,
+      "addition_type": "H\u2070-only",
+      "reversible": true
+    },
+    "C->D": {
+      "delta_rho": 0.018771202844382273,
+      "delta_edges": 5,
+      "addition_type": "H\u2070-only",
+      "reversible": true
+    },
+    "B->C": {
+      "delta_rho": 0.02660214452820142,
+      "delta_edges": 1,
+      "addition_type": "H\u2070-only",
+      "reversible": true
+    }
+  }
+}
