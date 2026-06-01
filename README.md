@@ -18,12 +18,11 @@ We managed combinatorial explosion by limiting nodes to 8 in quivers as stop arc
 <img width="805" height="1215" alt="Screenshot 2026-05-31 at 10 23 50 PM" src="https://github.com/user-attachments/assets/9e0a34af-e8d4-4926-b245-3c17b4637ea4" />
 
 
-<img width="789" height="1307" alt="Screenshot 2026-05-31 at 10 24 05 PM" src="https://github.com/user-attachments/assets/afe9c9ff-280c-4bc1-b12a-f4caf5d591e8" />
-
-
 AUs are being used to manage complexity and state space (Lazy Evaluation)
 
 <img width="777" height="509" alt="Screenshot 2026-05-31 at 10 24 26 PM" src="https://github.com/user-attachments/assets/31f310a9-5929-4f3e-a93d-6c5c341463ac" />
+
+<img width="789" height="1307" alt="Screenshot 2026-05-31 at 10 24 05 PM" src="https://github.com/user-attachments/assets/afe9c9ff-280c-4bc1-b12a-f4caf5d591e8" />
 
 
 
