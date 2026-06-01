@@ -1,4 +1,4 @@
-<img width="781" height="673" alt="Screenshot 2026-05-31 at 10 19 48 PM" src="https://github.com/user-attachments/assets/fe4ad0be-e52c-47ca-a21e-90855b2cebc3" />
+
 # AU-Fukaya-Complex-for-large-set-of-Regions
 We managed combinatorial explosion by limiting nodes to 8 in quivers as stop architecture creates numerous combinaions of flow. In this repository we are going to model the entire brain with all secondary interactions using category of Arithmetic Universes as Modules (only additon and scalar multiplication is allowed). MAGMA Quiver Path Algebra is Associative so Julia A inifinity implementation from previous project came handy.
 
@@ -11,6 +11,8 @@ We managed combinatorial explosion by limiting nodes to 8 in quivers as stop arc
 
 <img width="800" height="1437" alt="Screenshot 2026-05-31 at 10 17 29 PM" src="https://github.com/user-attachments/assets/35e0dc83-1b28-42a3-b631-12daed57a41f" />
 
+
+<img width="781" height="673" alt="Screenshot 2026-05-31 at 10 19 48 PM" src="https://github.com/user-attachments/assets/fe4ad0be-e52c-47ca-a21e-90855b2cebc3" />
 
 
 
