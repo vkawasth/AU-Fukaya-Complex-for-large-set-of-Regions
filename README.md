@@ -23,6 +23,10 @@ AUs are being used to manage complexity and state space (Lazy Evaluation)
 
 <img width="777" height="509" alt="Screenshot 2026-05-31 at 10 24 26 PM" src="https://github.com/user-attachments/assets/31f310a9-5929-4f3e-a93d-6c5c341463ac" />
 
+Complexity (N^6 to O(N))
+
+<img width="830" height="1494" alt="Screenshot 2026-06-01 at 12 16 09 AM" src="https://github.com/user-attachments/assets/6c7020ab-687e-46f7-9270-511d755f5676" />
+
 
 
 
