@@ -1,6 +1,14 @@
 # AU-Fukaya-Complex-for-large-set-of-Regions
 We managed combinatorial explosion by limiting nodes to 8 in quivers as stop architecture creates numerous combinaions of flow. In this repository we are going to model the entire brain with all secondary interactions using category of Arithmetic Universes as Modules (only additon and scalar multiplication is allowed).
 
+<img width="652" height="636" alt="Screenshot 2026-05-31 at 9 49 55 PM" src="https://github.com/user-attachments/assets/5cc75bfd-733d-44ed-88b1-0a7955be108e" />
+
+<img width="663" height="422" alt="Screenshot 2026-05-31 at 10 00 40 PM" src="https://github.com/user-attachments/assets/5764870c-7a10-45b7-b05f-4b556c83e611" />
+
+
+
+
+
 AU-FUKAYA FRAMEWORK: 75-NODE BALBC CONNECTOME
 ======================================================================
 Vertices:  75
