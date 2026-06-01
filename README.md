@@ -7,6 +7,9 @@ We managed combinatorial explosion by limiting nodes to 8 in quivers as stop arc
 
 <img width="801" height="1607" alt="Screenshot 2026-05-31 at 10 15 33 PM" src="https://github.com/user-attachments/assets/325f3e6e-3b7f-4d4f-a6db-60bb6819e047" />
 
+<img width="800" height="1437" alt="Screenshot 2026-05-31 at 10 17 29 PM" src="https://github.com/user-attachments/assets/35e0dc83-1b28-42a3-b631-12daed57a41f" />
+
+
 
 
 
