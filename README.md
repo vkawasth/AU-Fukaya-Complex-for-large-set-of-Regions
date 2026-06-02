@@ -27,6 +27,9 @@ Complexity (N^6 to O(N))
 
 <img width="830" height="1494" alt="Screenshot 2026-06-01 at 12 16 09 AM" src="https://github.com/user-attachments/assets/6c7020ab-687e-46f7-9270-511d755f5676" />
 
+When can one add two AUs?
+
+<img width="744" height="661" alt="Screenshot 2026-06-02 at 2 38 10 PM" src="https://github.com/user-attachments/assets/a9d857b1-cf97-4cb8-9f89-7f8439a099a4" />
 
 
 
