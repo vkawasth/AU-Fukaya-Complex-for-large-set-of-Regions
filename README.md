@@ -1,6 +1,27 @@
 Non-Military Use Restriction
 This project is developed and published strictly for peaceful, educational, and civilian research purposes. By using, modifying, or distributing this software, you agree that it will not be used, directly or indirectly, in the development, production, testing, deployment, maintenance, or operation of military systems, weapons systems, surveillance infrastructure, or any other defense-related application.
 
+Specifically
+
+Prohibition of Military Application
+The author explicitly prohibits the use of any part of this work – including but not limited to the A∞‑algebraic 
+framework, Toda flow control,
+stochastic aggregation methods, Morita class detection, and reverse Hironaka surgery – for military purposes. Such 
+prohibited uses include:
+
+    Designing, testing, or operating command‑and‑control networks for armed forces.
+
+    Developing autonomous or semi‑autonomous weapons that rely on network coherence metrics.
+
+    Enhancing battlefield situational awareness or targeting systems.
+
+    Simulating or optimising logistical movements in a conflict zone.
+
+This restriction is consistent with the principles of the Geneva Conventions (Protocol I, Article 36) on the review of 
+new weapons, the UN Secretary‑General’s Call for a Ban on Lethal Autonomous Weapons (2021), and the OECD 
+Recommendation on Responsible Innovation. Any person or entity wishing to use this work must first obtain written 
+permission from the author and provide a legally binding commitment to non‑military use.
+
 # AU-Fukaya-Complex-for-large-set-of-Regions
 We managed combinatorial explosion by limiting nodes to 8 in quivers as stop architecture creates numerous combinaions of flow. In this repository we are going to model the entire brain with all secondary interactions using category of Arithmetic Universes as Modules (only additon and scalar multiplication is allowed). MAGMA Quiver Path Algebra is Associative so Julia A inifinity implementation from previous project came handy.
 
