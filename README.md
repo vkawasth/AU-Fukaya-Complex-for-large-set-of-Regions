@@ -1,3 +1,5 @@
+Non-Military Use Restriction
+This project is developed and published strictly for peaceful, educational, and civilian research purposes. By using, modifying, or distributing this software, you agree that it will not be used, directly or indirectly, in the development, production, testing, deployment, maintenance, or operation of military systems, weapons systems, surveillance infrastructure, or any other defense-related application.
 
 # AU-Fukaya-Complex-for-large-set-of-Regions
 We managed combinatorial explosion by limiting nodes to 8 in quivers as stop architecture creates numerous combinaions of flow. In this repository we are going to model the entire brain with all secondary interactions using category of Arithmetic Universes as Modules (only additon and scalar multiplication is allowed). MAGMA Quiver Path Algebra is Associative so Julia A inifinity implementation from previous project came handy.
