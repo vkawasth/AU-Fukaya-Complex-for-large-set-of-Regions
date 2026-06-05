@@ -440,6 +440,7 @@ Gr(2,4) SCHUBERT CELL INTERPRETATION
 
 
 STOP Architecture Game with AUs exploring Markov chains using Operator.
+
 ====================================================================
 PHARMACODYNAMIC MARL GAME — Q_7P, Renkin-Crone weights
 ====================================================================
@@ -476,12 +477,15 @@ POLICY COMPARISON: Greedy vs Look-ahead (20 rounds max)
   but that edge is on a path the Markov chain avoids —
   blocking it has zero effect. Look-ahead sees this via
   the 8-step bracket and skips to the productive block.
+  
 ====================================================================
 
 [B] TWO-AGENT GAME — Look-ahead policy
 ====================================================================
+
 TWO-AGENT GAME: Opiate vs Norcain
 Q_7P graph, Renkin-Crone weights, exact NNO arithmetic
+
 ====================================================================
 Round  P_max      Stratum   Norcain blocks          Δ P_max 
 ────────────────────────────────────────────────────────────────────
