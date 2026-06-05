@@ -130,20 +130,15 @@ end
 # =============================================================================
 # Norcain can only block INCOMING edges to sAMY (the target) and
 # INCOMING edges to HPF (the dominant relay).
-# Must be computed dynamically from the current stop architecture
-# so that STOPS_C correctly includes LA→sAMY and BLA→sAMY as blockable.
-function blockable_edges(base_stops::Set)
-    sort(
-        [(e, Float64(get(GAME_WEIGHTS, e, NNO_ONE)))
-         for e in GAME_EDGES
-         if ((e[2] == :sAMY) ||
-             (e[2] == :HPF && e[1] != :sAMY))
-            && e ∉ base_stops],
-        by=x->x[2], rev=true)
-end
-
-# Pre-compute for BASE_STOPS (used as default)
-const BLOCKABLE_EDGES = blockable_edges(BASE_STOPS)
+# Blocking OUTGOING from sAMY has zero effect on P_max(CA1sp→sAMY).
+# Sorted by Renkin-Crone weight descending — highest weight = highest impact.
+const BLOCKABLE_EDGES = sort(
+    [(e, Float64(get(GAME_WEIGHTS, e, NNO_ONE)))
+     for e in GAME_EDGES
+     if ((e[2] == :sAMY) ||                 # incoming to sAMY
+         (e[2] == :HPF && e[1] != :sAMY))  # incoming to HPF relay (not sAMY→HPF)
+        && e ∉ BASE_STOPS],
+    by=x->x[2], rev=true)
 
 
 """
@@ -162,12 +157,11 @@ k_steps: how many Markov steps to simulate per candidate (default 8).
 function norcain_policy(stratum::Int,
                          current_stops::Set,
                          p_max::Float64;
-                         k_steps::Int = 8,
-                         blockable::Vector = BLOCKABLE_EDGES)
+                         k_steps::Int = 8)
 
     stratum == 0 && return nothing   # Nash floor reached
 
-    available = [e for (e,_) in blockable if e ∉ current_stops]
+    available = [e for (e,_) in BLOCKABLE_EDGES if e ∉ current_stops]
     isempty(available) && return nothing
 
     # ── Look-ahead: score each candidate block ─────────────────────────────
@@ -214,8 +208,7 @@ end
 function run_game(n_rounds::Int = 20; verbose::Bool = true,
                    stops::Set = BASE_STOPS)
 
-    current_stops = copy(stops)
-    bl            = blockable_edges(stops)
+    current_stops = copy(BASE_STOPS)
     p_max         = run_opiate(current_stops)
 
     history = NamedTuple[]
@@ -234,7 +227,7 @@ function run_game(n_rounds::Int = 20; verbose::Bool = true,
         stratum = stratum_from_pmax(p_max)
 
         # ── Norcain observes stratum, picks action ────────────────────────
-        action = norcain_policy(stratum, current_stops, p_max; blockable=bl)
+        action = norcain_policy(stratum, current_stops, p_max)
 
         p_max_after = p_max
         delta       = 0.0
@@ -546,18 +539,17 @@ Used as a baseline to demonstrate the advantage of look-ahead.
 """
 function norcain_greedy_policy(stratum::Int,
                                 current_stops::Set,
-                                p_max::Float64;
-                                blockable::Vector = BLOCKABLE_EDGES)
+                                p_max::Float64)
     stratum == 0 && return nothing
-    available = [e for (e,_) in blockable if e ∉ current_stops]
+    available = [e for (e,_) in BLOCKABLE_EDGES if e ∉ current_stops]
     isempty(available) && return nothing
 
     # Pure greedy: always pick highest-weight incoming edge to sAMY
-    for (e, _) in blockable
+    for (e, _) in BLOCKABLE_EDGES
         e ∉ current_stops && e[2] == :sAMY && return e
     end
     # Fallback: highest-weight incoming to HPF relay
-    for (e, _) in blockable
+    for (e, _) in BLOCKABLE_EDGES
         e ∉ current_stops && return e
     end
     return nothing
@@ -572,14 +564,13 @@ function run_policy_comparison(n_rounds::Int = 20; verbose::Bool = true,
                                    stops::Set = BASE_STOPS)
 
     function run_with_policy(policy_fn, label, base_stops=BASE_STOPS)
-        bl            = blockable_edges(base_stops)
         current_stops = copy(base_stops)
         p_max         = run_opiate(current_stops)
         history       = NamedTuple[]
 
         for rnd in 1:n_rounds
             stratum = stratum_from_pmax(p_max)
-            action  = policy_fn(stratum, current_stops, p_max; blockable=bl)
+            action  = policy_fn(stratum, current_stops, p_max)
 
             delta = 0.0
             if action !== nothing
@@ -602,8 +593,8 @@ function run_policy_comparison(n_rounds::Int = 20; verbose::Bool = true,
     end
 
     # Pass stop architecture into each policy run
-    h_greedy    = run_with_policy((s,cs,p;blockable=BLOCKABLE_EDGES)->norcain_greedy_policy(s,cs,p;blockable=blockable),   "Greedy",    stops)
-    h_lookahead = run_with_policy((s,cs,p;blockable=BLOCKABLE_EDGES)->norcain_policy(s,cs,p;blockable=blockable),          "Look-ahead", stops)
+    h_greedy    = run_with_policy((s,cs,p)->norcain_greedy_policy(s,cs,p),   "Greedy",    stops)
+    h_lookahead = run_with_policy((s,cs,p)->norcain_policy(s,cs,p),          "Look-ahead", stops)
 
     if verbose
         println("\n" * "="^68)
@@ -666,28 +657,19 @@ if abspath(PROGRAM_FILE) == @__FILE__
     println("PHARMACODYNAMIC MARL GAME — Q_7P, Renkin-Crone weights")
     println("="^68)
 
-    for (stop_label, stop_set) in [
-            ("STOPS_A (Sector A — canonical, BLA/LA loops closed)", STOPS_A),
-            ("STOPS_C (Sector C — BLA/LA paths active, richer game)", STOPS_C),
-        ]
+    # ── 1. Initial state ───────────────────────────────────────────────────
+    p0 = run_opiate(BASE_STOPS)
+    @printf("\nBaseline P_max (no blocking): %.6f\n", p0)
+    @printf("Nash floor (1/17, direct CA1sp→sAMY): %.6f\n\n", NASH_FLOOR)
+    print_projections(BASE_STOPS, 0; label="Baseline projections")
 
-        println("\n" * "╔" * "═"^64 * "╗")
-        println("║  Stop architecture: $stop_label")
-        println("╚" * "═"^64 * "╝")
+    # ── 2. Policy comparison (greedy vs look-ahead) ───────────────────────
+    println("[1] POLICY COMPARISON: Greedy vs Look-ahead")
+    h_greedy, h_lookahead = run_policy_comparison(20; verbose=true)
 
-        p0 = run_opiate(stop_set)
-        @printf("\nBaseline P_max: %.6f  (Nash floor = 1/17 ≈ %.4f)\n",
-                p0, NASH_FLOOR)
-        print_projections(stop_set, 0; label="Baseline projections")
-
-        # ── Policy comparison ─────────────────────────────────────────────
-        println("\n[A] POLICY COMPARISON: Greedy vs Look-ahead")
-        h_greedy, h_lookahead = run_policy_comparison(20;
-                                    verbose=true, stops=stop_set)
-
-        # ── Two-agent game ────────────────────────────────────────────────
-        println("\n[B] TWO-AGENT GAME — Look-ahead policy")
-        history_2 = run_game(20; verbose=true, stops=stop_set)
+    # ── 3. Two-agent game (look-ahead) ─────────────────────────────────────
+    println("\n[2] TWO-AGENT GAME — Look-ahead policy")
+    history_2 = run_game(20; verbose=true)
 
     if !isempty(history_2)
         println("\n  Post-game projections:")
@@ -701,45 +683,27 @@ if abspath(PROGRAM_FILE) == @__FILE__
                 h.round, h.stratum, bar, h.p_max, act)
     end
 
-        # ── Q-table ──────────────────────────────────────────────────────
-        println("\n[C] Q-TABLE (exact NNO rational rewards)")
-        qt = compute_q_table(false)   # silent, just return
+    # ── 3. Q-table ─────────────────────────────────────────────────────────
+    println("\n[3] Q-TABLE (exact NNO rational rewards)")
+    qt = compute_q_table(true)
 
-        # ── Four-agent cooperative game ───────────────────────────────────
-        println("\n[D] FOUR-AGENT COOPERATIVE GAME")
-        history_4 = run_marl_game(15; verbose=true, stops=stop_set)
+    # ── 4. Four-agent cooperative game ────────────────────────────────────
+    println("\n[4] FOUR-AGENT COOPERATIVE GAME")
+    history_4 = run_marl_game(15; verbose=true)
 
-        # ── Nash analysis ─────────────────────────────────────────────────
-        println("\n[E] NASH ANALYSIS")
-        println("─"^68)
-        @printf("  %-28s  P_max = %.6f\n", "Baseline:", p0)
-        @printf("  %-28s  P_max = %.6f\n", "2-agent look-ahead:",
-                history_2[end].p_max)
-        @printf("  %-28s  P_max = %.6f\n", "4-agent cooperative:",
-                history_4[end].p_max)
-        @printf("  %-28s  P_max = %.6f\n", "Nash floor (1/17):", NASH_FLOOR)
-        improvement = 100*(p0 - history_2[end].p_max)/p0
-        @printf("  Norcain reduction: %.1f%%  (from %.4f to %.4f)\n",
-                improvement, p0, history_2[end].p_max)
-        println("─"^68)
-    end  # stop architecture loop
-
-    # ── Cross-architecture summary ────────────────────────────────────────
-    println("\n" * "="^68)
-    println("CROSS-ARCHITECTURE SUMMARY")
-    println("="^68)
-    println("  STOPS_A: sAMY→HPF is the only active path.")
-    println("    1 block (HPF→sAMY) → Nash floor in 1 round.")
-    println("    Greedy = Look-ahead (only one path to block).")
+    # ── 5. Nash analysis ───────────────────────────────────────────────────
+    println("\n[5] NASH EQUILIBRIUM ANALYSIS")
+    println("─"^68)
+    println("  P_max trajectory comparison:")
+    @printf("  %-25s  P_max = %.6f\n", "Baseline (no blocking):", p0)
+    @printf("  %-25s  P_max = %.6f\n", "2-agent (norcain only):",
+            history_2[end].p_max)
+    @printf("  %-25s  P_max = %.6f\n", "4-agent (cooperative):",
+            history_4[end].p_max)
+    @printf("  %-25s  P_max = %.6f\n", "Nash floor (1/17):", NASH_FLOOR)
     println()
-    println("  STOPS_C: sAMY→HPF + sAMY→BLA + sAMY→LA all active.")
-    println("    Greedy: blocks high-weight LA→sAMY (Δ=0, stuck 20 rounds)")
-    println("    Look-ahead: finds CA1sp→sAMY via 8-step bracket (2 rounds)")
-    println("    This is the look-ahead advantage: the 8-step Markov")
-    println("    bracket reveals that LA is not on any active circuit")
-    println("    after HPF→sAMY is blocked.")
-    println()
-    println("  Both architectures confirm Nash floor = 1/17 ≈ 0.0588")
-    println("  and coker=62 obstruction (direct path always survives).")
-    println("="^68)
+    println("  coker(ρ*_sAMY↔Infra) = 62  ↔  no stable NE")
+    println("  62 alternative paths survive any finite stop set")
+    println("  The direct CA1sp→sAMY edge (w=1/17) is the irreducible floor")
+    println("─"^68)
 end
