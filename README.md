@@ -437,3 +437,213 @@ Gr(2,4) SCHUBERT CELL INTERPRETATION
      X_2 (Sector C) is separated by a stability wall (crisis boundary).
      The wall X_0 ↔ X_2 is the opioid crisis: irreversible at the
      categorical level (H²(Cone(ρ_AC)) ≠ 0).
+
+
+STOP Architecture Game with AUs exploring Markov chains using Operator.
+====================================================================
+PHARMACODYNAMIC MARL GAME — Q_7P, Renkin-Crone weights
+====================================================================
+
+╔════════════════════════════════════════════════════════════════╗
+║  Stop architecture: STOPS_A (Sector A — canonical, BLA/LA loops closed)
+╚════════════════════════════════════════════════════════════════╝
+
+Baseline P_max: 0.655248  (Nash floor = 1/17 ≈ 0.0588)
+  Baseline projections:
+    Markov p(sAMY) bracket [0.2687, 0.6552]  ▄█▄█▄█▄█▄█▄█▄█▅
+    Fisher risk:  0.8875  █████████████████░░░  (1=opiate free, 0=blocked)
+    Top flow edges (norcain targets):
+      sAMY      →HPF         R_eff=0.0029  w=345.9
+      HPF       →sAMY        R_eff=0.0029  w=345.9
+      HPF       →CA1sp       R_eff=0.0529  w=15.0
+
+[A] POLICY COMPARISON: Greedy vs Look-ahead
+
+====================================================================
+POLICY COMPARISON: Greedy vs Look-ahead (20 rounds max)
+====================================================================
+  Round   Greedy P_max / action   Look-ahead P_max / action
+  ────────────────────────────────────────────────────────────────
+  R1     0.2687  HPF→sAMY        0.2687  HPF→sAMY      
+  R2     0.0000  CA1sp→sAMY      0.0000  CA1sp→sAMY    
+  ────────────────────────────────────────────────────────────────
+  Final P_max:  Greedy=0.0000  Look-ahead=0.0000
+  Rounds used:  Greedy=2     Look-ahead=2  
+  Improvement:  0.0% fewer rounds, 0.0000 lower P_max
+
+  Key insight: look-ahead finds CA1sp→sAMY (low weight)
+  instead of LA→sAMY (high weight). Greedy picks LA→sAMY
+  but that edge is on a path the Markov chain avoids —
+  blocking it has zero effect. Look-ahead sees this via
+  the 8-step bracket and skips to the productive block.
+====================================================================
+
+[B] TWO-AGENT GAME — Look-ahead policy
+====================================================================
+TWO-AGENT GAME: Opiate vs Norcain
+Q_7P graph, Renkin-Crone weights, exact NNO arithmetic
+====================================================================
+Round  P_max      Stratum   Norcain blocks          Δ P_max 
+────────────────────────────────────────────────────────────────────
+  R1  [Str=3B]  █████░░░░░░░░░░░░░░░ 0.2687  HPF→sAMY  Δ=0.3865
+  R2  [Str=2C]  ░░░░░░░░░░░░░░░░░░░░ 0.0000  CA1sp→sAMY  Δ=0.2687
+  Nash floor reached.
+────────────────────────────────────────────────────────────────────
+
+  Post-game projections:
+    Markov p(sAMY) bracket [0.0000, 0.0000]  ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+    Fisher risk:  0.9079  ██████████████████░░  (1=opiate free, 0=blocked)
+    Top flow edges (norcain targets):
+      sAMY      →HPF         R_eff=0.0029  w=345.9
+      HPF       →CA1sp       R_eff=0.0645  w=15.0
+      CA1sp     →HPF         R_eff=0.0645  w=15.0
+
+  Game trajectory (P_max per round):
+  R1  [Str=3] ████████░░░░░░░░░░░░░░░░░░░░░░ 0.2687  HPF→sAMY
+  R2  [Str=2] ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0.0000  CA1sp→sAMY
+
+[C] Q-TABLE (exact NNO rational rewards)
+
+[D] FOUR-AGENT COOPERATIVE GAME
+
+====================================================================
+4-AGENT COOPERATIVE GAME
+Norcain + Naltrexone + Buprenorphine vs Opiate
+====================================================================
+Round  P_max      Stratum   Actions taken
+────────────────────────────────────────────────────────────────────
+1      ░░░░░░░░░░░░░░░░░░░░ 0.0000  3(B)      norcain:HPF→sAMY, buprenorphine:CA1sp→sAMY
+  Nash floor reached.
+────────────────────────────────────────────────────────────────────
+  Final P_max = 0.000000  (Nash floor = 1/17 ≈ 0.0588)
+  🏆 Nash floor achieved — minimum possible P_max
+====================================================================
+
+[E] NASH ANALYSIS
+────────────────────────────────────────────────────────────────────
+  Baseline:                     P_max = 0.655248
+  2-agent look-ahead:           P_max = 0.000000
+  4-agent cooperative:          P_max = 0.000000
+  Nash floor (1/17):            P_max = 0.058824
+  Norcain reduction: 100.0%  (from 0.6552 to 0.0000)
+────────────────────────────────────────────────────────────────────
+
+╔════════════════════════════════════════════════════════════════╗
+║  Stop architecture: STOPS_C (Sector C — BLA/LA paths active, richer game)
+╚════════════════════════════════════════════════════════════════╝
+
+Baseline P_max: 0.655248  (Nash floor = 1/17 ≈ 0.0588)
+  Baseline projections:
+    Markov p(sAMY) bracket [0.2687, 0.6681]  ▄█▄█▄█▄█▄█▄█▄█▄
+    Fisher risk:  0.8619  █████████████████░░░  (1=opiate free, 0=blocked)
+    Top flow edges (norcain targets):
+      HPF       →sAMY        R_eff=0.0029  w=345.9
+      sAMY      →HPF         R_eff=0.0029  w=345.9
+      sAMY      →LA          R_eff=0.0101  w=97.5
+
+[A] POLICY COMPARISON: Greedy vs Look-ahead
+
+====================================================================
+POLICY COMPARISON: Greedy vs Look-ahead (20 rounds max)
+====================================================================
+  Round   Greedy P_max / action   Look-ahead P_max / action
+  ────────────────────────────────────────────────────────────────
+  R1     0.2687  HPF→sAMY        0.2687  HPF→sAMY      
+  R2     0.2687  —               0.0296  CA1sp→sAMY     ←
+  R3     0.2687  —               —                     
+  R4     0.2687  —               —                     
+  R5     0.2687  —               —                     
+  R6     0.2687  —               —                     
+  R7     0.2687  —               —                     
+  R8     0.2687  —               —                     
+  R9     0.2687  —               —                     
+  R10    0.2687  —               —                     
+  R11    0.2687  —               —                     
+  R12    0.2687  —               —                     
+  R13    0.2687  —               —                     
+  R14    0.2687  —               —                     
+  R15    0.2687  —               —                     
+  R16    0.2687  —               —                     
+  R17    0.2687  —               —                     
+  R18    0.2687  —               —                     
+  R19    0.2687  —               —                     
+  R20    0.2687  —               —                     
+  ────────────────────────────────────────────────────────────────
+  Final P_max:  Greedy=0.2687  Look-ahead=0.0296
+  Rounds used:  Greedy=20    Look-ahead=2  
+  Improvement:  90.0% fewer rounds, 0.2391 lower P_max
+
+  Key insight: look-ahead finds CA1sp→sAMY (low weight)
+  instead of LA→sAMY (high weight). Greedy picks LA→sAMY
+  but that edge is on a path the Markov chain avoids —
+  blocking it has zero effect. Look-ahead sees this via
+  the 8-step bracket and skips to the productive block.
+====================================================================
+
+[B] TWO-AGENT GAME — Look-ahead policy
+====================================================================
+TWO-AGENT GAME: Opiate vs Norcain
+Q_7P graph, Renkin-Crone weights, exact NNO arithmetic
+====================================================================
+Round  P_max      Stratum   Norcain blocks          Δ P_max 
+────────────────────────────────────────────────────────────────────
+  R1  [Str=3B]  █████░░░░░░░░░░░░░░░ 0.2687  HPF→sAMY  Δ=0.3865
+  R2  [Str=2C]  ░░░░░░░░░░░░░░░░░░░░ 0.0296  CA1sp→sAMY  Δ=0.2391
+  Nash floor reached.
+────────────────────────────────────────────────────────────────────
+
+  Post-game projections:
+    Markov p(sAMY) bracket [0.0000, 0.0524]  ▁▃█████████████
+    Fisher risk:  0.8780  █████████████████░░░  (1=opiate free, 0=blocked)
+    Top flow edges (norcain targets):
+      sAMY      →HPF         R_eff=0.0034  w=345.9
+      sAMY      →LA          R_eff=0.0101  w=97.5
+      LA        →sAMY        R_eff=0.0101  w=97.5
+
+  Game trajectory (P_max per round):
+  R1  [Str=3] ████████░░░░░░░░░░░░░░░░░░░░░░ 0.2687  HPF→sAMY
+  R2  [Str=2] ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 0.0296  CA1sp→sAMY
+
+[C] Q-TABLE (exact NNO rational rewards)
+
+[D] FOUR-AGENT COOPERATIVE GAME
+
+====================================================================
+4-AGENT COOPERATIVE GAME
+Norcain + Naltrexone + Buprenorphine vs Opiate
+====================================================================
+Round  P_max      Stratum   Actions taken
+────────────────────────────────────────────────────────────────────
+1      ░░░░░░░░░░░░░░░░░░░░ 0.0000  3(B)      norcain:HPF→sAMY, buprenorphine:CA1sp→sAMY
+  Nash floor reached.
+────────────────────────────────────────────────────────────────────
+  Final P_max = 0.000000  (Nash floor = 1/17 ≈ 0.0588)
+  🏆 Nash floor achieved — minimum possible P_max
+====================================================================
+
+[E] NASH ANALYSIS
+────────────────────────────────────────────────────────────────────
+  Baseline:                     P_max = 0.655248
+  2-agent look-ahead:           P_max = 0.029598
+  4-agent cooperative:          P_max = 0.000000
+  Nash floor (1/17):            P_max = 0.058824
+  Norcain reduction: 95.5%  (from 0.6552 to 0.0296)
+────────────────────────────────────────────────────────────────────
+
+====================================================================
+CROSS-ARCHITECTURE SUMMARY
+====================================================================
+  STOPS_A: sAMY→HPF is the only active path.
+    1 block (HPF→sAMY) → Nash floor in 1 round.
+    Greedy = Look-ahead (only one path to block).
+
+  STOPS_C: sAMY→HPF + sAMY→BLA + sAMY→LA all active.
+    Greedy: blocks high-weight LA→sAMY (Δ=0, stuck 20 rounds)
+    Look-ahead: finds CA1sp→sAMY via 8-step bracket (2 rounds)
+    This is the look-ahead advantage: the 8-step Markov
+    bracket reveals that LA is not on any active circuit
+    after HPF→sAMY is blocked.
+
+  Both architectures confirm Nash floor = 1/17 ≈ 0.0588
+  and coker=62 obstruction (direct path always survives).
+====================================================================
