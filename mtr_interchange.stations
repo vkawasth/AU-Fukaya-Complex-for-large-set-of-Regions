@@ -1,0 +1,18 @@
+# MTR Interchange Subgraph — 18 stations, 16 edges
+# col_idx  source  target  weight
+1	Admiralty	Austin	130
+2	Admiralty	Central	180
+3	Admiralty	Tsim_Sha_Tsui	160
+4	Austin	Hung_Hom	75
+5	Austin	Nam_Cheong	75
+6	Diamond_Hill	Ho_Man_Tin	130
+7	Diamond_Hill	Wong_Chuk_Hang	130
+8	Ho_Man_Tin	Hung_Hom	140
+9	Ho_Man_Tin	Tsim_Sha_Tsui	130
+10	Kowloon_Tong	Prince_Edward	140
+11	Kowloon_Tong	Tai_Wai	130
+12	Lai_King	Nam_Cheong	55
+13	Mong_Kok	Prince_Edward	160
+14	North_Point	Quarry_Bay	180
+15	North_Point	Yau_Tong	70
+16	Tiu_Keng_Leng	Yau_Tong	140
