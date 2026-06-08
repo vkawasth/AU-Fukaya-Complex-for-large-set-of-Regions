@@ -1,0 +1,36 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           DATA SCIENTIST LAYER                              │
+│  Writes Fukaya queries in IR (or a high-level DSL that lowers to IR)       │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           OPTIMIZATION PASSES                               │
+│  - Constant propagation (inline product affinities)                        │
+│  - Dead code elimination (remove unused Floer complexes)                   │
+│  - Loop unrolling (NNOUnrolledLoop → straight-line code)                   │
+│  - Inlining (small functions like sqrt(density))                          │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           LOWERING (fk_ir_to_julia.jl)                      │
+│  Translates IR to Julia AST that calls:                                     │
+│    - au_fukaya_engine.jl (AU attic, surgery nodes)                         │
+│    - fukaya_ad_context.jl (Floer complexes, A∞ ops)                        │
+│    - au_compiler.jl (routing tables, HMM brackets)                         │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           JULIA JIT (LLVM backend)                          │
+│  Compiles Julia AST to native machine code                                  │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           RUNTIME (SLA <5ms)                                │
+│  - AU pullback only at surgery nodes                                        │
+│  - All loops unrolled (NNO counters)                                       │
+│  - No dynamic dispatch (concrete types)                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
