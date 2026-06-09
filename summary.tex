@@ -1,0 +1,190 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,booktabs,geometry,enumitem,xcolor,microtype,hyperref}
+\geometry{margin=2.2cm}
+\definecolor{dark}{RGB}{30,30,30}
+\definecolor{accent}{RGB}{41,128,185}
+\definecolor{soft}{RGB}{240,244,248}
+\pagecolor{white}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent}
+
+\begin{document}
+\thispagestyle{empty}
+
+% ── Header ───────────────────────────────────────────────────────────────────
+{\Large\bfseries\color{dark}
+  Hallucination Removal via Chain Complex Homology\\[4pt]}
+{\large\color{accent} One-Page Technical Summary}
+\hfill{\small\color{gray} \today}
+\vspace{2pt}
+\hrule height 1.5pt
+\vspace{14pt}
+
+% ── The claim ────────────────────────────────────────────────────────────────
+\noindent
+\colorbox{soft}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+\vspace{6pt}
+\textbf{Core claim.}
+Hallucination is not a single event.
+It is the intersection of failures in \emph{global consistency},
+\emph{structural identifiability}, and \emph{generative stability} ---
+three mathematically distinct failure modes of a structured semantic
+transition system, each detectable by a different algebraic invariant.
+\vspace{6pt}}}
+
+\vspace{12pt}
+
+% ── Three failure modes ───────────────────────────────────────────────────────
+\noindent\textbf{The three failure modes}
+\vspace{6pt}
+
+\begin{tabular}{p{0.5cm}p{3.2cm}p{4.5cm}p{5.0cm}}
+\toprule
+& \textbf{Failure mode} & \textbf{Algebraic detector} & \textbf{Corresponds to} \\
+\midrule
+(i) &
+  Global inconsistency &
+  $H_1(C_*;\mathbb{Z}_5)$:
+  cycle does not bound a filled 2-cell;
+  $[\gamma]\neq 0$ &
+  Logical contradiction; impossible world state;
+  "sounds right locally but cannot complete globally" \\[6pt]
+(ii) &
+  Structural ambiguity &
+  $\mathbb{Z}_2$ projection:
+  orientation collapse;
+  reversed path $\equiv$ forward path &
+  Symmetry confusion; conflated meanings;
+  indistinguishable reasoning paths \\[6pt]
+(iii) &
+  Generative instability &
+  2-adic $v_2(\text{prefix})$:
+  boundary mismatch accumulates in partial path &
+  Semantic drift; compounding error;
+  early divergence from admissible structure \\
+\bottomrule
+\end{tabular}
+
+\vspace{10pt}
+
+% ── Operational definition ───────────────────────────────────────────────────
+\noindent\textbf{Operational definition}
+\[
+\boxed{
+\mathrm{hallucination}
+\;\Longleftrightarrow\;
+\underbrace{\neg(\text{stable prefix})}_{\text{(iii) 2-adic}}\;
+\vee\;
+\underbrace{\neg(\text{structurally distinct path})}_{\text{(ii) }\mathbb{Z}_2}\;
+\vee\;
+\underbrace{\neg(\text{globally fillable cycle})}_{\text{(i) }H_1(\mathbb{Z}_5)}
+}
+\]
+
+\vspace{8pt}
+
+% ── What the algebra actually does ───────────────────────────────────────────
+\noindent\textbf{What the algebra actually does}
+(important correction from experiment)
+
+\vspace{4pt}
+\begin{tabular}{p{2.8cm}p{5.0cm}p{5.0cm}}
+\toprule
+& \textbf{Role} & \textbf{NOT} \\
+\midrule
+$H_1(C_*;\mathbb{Z}_5)$ &
+  Global admissibility classifier.
+  $[\gamma]=0$ iff cycle bounds a filled disk. &
+  Not a "detector of truth."
+  Classifies trajectory structure, not facts. \\[4pt]
+$\mathbb{Z}_2$ &
+  Orientation-forgetting projection of the same topology.
+  $-1\equiv+1$: direction disappears. &
+  Not a weaker version of $\mathbb{Z}_5$.
+  Different invariant, different question. \\[4pt]
+2-adic $v_2$ &
+  Prefix stability metric during generation.
+  Meaningful only on partial paths, not completed cycles. &
+  Not a topological invariant.
+  Measures dynamics, not structure. \\
+\bottomrule
+\end{tabular}
+
+\vspace{10pt}
+
+% ── Empirical evidence ───────────────────────────────────────────────────────
+\noindent\textbf{Empirical evidence}
+
+\begin{itemize}[noitemsep,topsep=4pt]
+  \item \textbf{6-node chain complex.}
+        $d^2=0$ verified over $\mathbb{Z}_2$ and $\mathbb{Z}_5$.
+        Cycle A (filled 2-cell): $[\gamma_A]=0$, gate allows.
+        Cycle B (hole): $[\gamma_B]\neq 0$, gate blocks.
+        Anti-FSM result: cycles share edges $e_{23},e_{34}$ ---
+        same adjacency, different homology.
+        FSM cannot distinguish them; $H_1$ can.
+
+  \item \textbf{Protocol benchmark.}
+        Baseline nanoGPT: 54\% valid at temperature 3.0.
+        IR-gated model: 100\% at all temperatures.
+        Ablation: removing $P_4$ reduces validity by 16pp
+        (P4-specific failures only); removing any other stage
+        causes stage-specific degradation only.
+
+  \item \textbf{OOD robustness.}
+        Baseline: 0\% valid on off-hours test (temporal OOD).
+        Gated: 100\%. Topology compiled from structure, not learned from data.
+
+  \item \textbf{Valuation experiment.}
+        Two edges: weight 5 ($v_5=1$) and weight 25 ($v_5=2$),
+        both $\equiv 0 \pmod{5}$.
+        FSM accuracy: 50\%. Mod-5 gate: 50\%.
+        Valuation gate ($\tau=2$): 100\%.
+        Non-Archimedean structure does real work.
+\end{itemize}
+
+\vspace{8pt}
+
+% ── What changed vs prior work ───────────────────────────────────────────────
+\noindent\textbf{What changes vs.\ prior work}
+
+\begin{tabular}{p{4.5cm}p{8cm}}
+\toprule
+\textbf{Prior framing} & \textbf{This work} \\
+\midrule
+"Model is wrong" &
+  "Which level of structure failed?" \\
+Single-score hallucination rate &
+  Three decomposed failure modes with distinct detectors \\
+Post-hoc detection (after generation) &
+  Pre-sampling support restriction (before softmax) \\
+External oracle required &
+  Admissibility compiled from structure; no oracle at inference \\
+Probability error / retrieval mismatch &
+  Projections of deeper structural failures in a semantic transition system \\
+\bottomrule
+\end{tabular}
+
+\vspace{10pt}
+
+% ── One sentence ─────────────────────────────────────────────────────────────
+\noindent
+\colorbox{soft}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+\vspace{6pt}
+\textbf{One sentence.}
+Hallucinations can be decomposed into three mathematically distinct failure
+modes --- global inconsistency, structural ambiguity, and generative instability ---
+each detectable by different algebraic invariants
+($H_1(\mathbb{Z}_5)$, $\mathbb{Z}_2$, 2-adic $v_2$)
+of the same semantic transition system,
+and preventable by pre-sampling support restriction before the softmax.
+\vspace{6pt}}}
+
+\vspace{8pt}
+\noindent{\small\color{gray}
+Full paper: \texttt{hallucination\_paper.pdf}\quad
+Code: \texttt{experiment4\_z5\_sanity.py},
+\texttt{experiment5\_minimal\_geometry.py},
+\texttt{benchmark\_final.py},
+\texttt{experiment3\_padic.py}}
+
+\end{document}

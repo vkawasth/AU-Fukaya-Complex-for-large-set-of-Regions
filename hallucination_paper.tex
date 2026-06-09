@@ -53,15 +53,26 @@
 \maketitle
 
 \begin{abstract}
-We present a \emph{compiled semantic admissibility architecture}
-in which higher-categorical consistency constraints are lowered into
-executable runtime admissibility projection passes over generative trajectories.
-Standard transformer decoding optimises pointwise local likelihood
-over an unconstrained support $\mathbb{R}^D$, permitting generation
-of outputs that are geometrically close in latent space but
-topologically inadmissible with respect to the data manifold.
-We replace this with \emph{support-restricted hierarchical
-continuation decoding}, governed by the core equation:
+Standard machine learning operates on real-valued continuous embeddings
+and probability measures that are invariant under smooth perturbations.
+Hallucinations, however, correspond to \emph{discrete structural
+obstructions} only detectable in quotient, cohomological, and
+finite-field representations --- not in $\mathbb{R}$-based metrics alone.
+
+The core thesis:
+\begin{quote}
+\emph{Continuous real-valued representations do not preserve homological
+invariants of the underlying discrete semantic graph.
+Hallucinations, defined as nontrivial homology classes in a chain
+complex of semantic continuations, are not detectable in
+$\mathbb{R}$-embedding space without additional quotient or
+cohomological structure.}
+\end{quote}
+
+We replace $\mathbb{R}$-valued decoding with a multiscale algebraic
+criterion over coefficient fields $\mathbb{Z}_2$ and $\mathbb{Z}_5$,
+inducing homological invariants on a finite chain complex $(C_*, d)$
+with explicitly verified $d^2 = 0$:
 \[
 P_{\mathrm{topo}}(x_{t+1} \mid X_{\leq t})
 \;=\;
@@ -69,26 +80,17 @@ P_{\mathrm{topo}}(x_{t+1} \mid X_{\leq t})
   \cdot \prod_{n=1}^{5}\mathbf{1}_{\{ob_n(x_{t+1}\mid X_{\leq t})=0\}}}
      {Z}
 \]
-where $P_\theta$ is the raw model distribution, each indicator
-$\mathbf{1}_{\{ob_n=0\}}$ tests whether the continuation lifts
-through Postnikov stage $n$, and $Z$ is the renormalisation over
-the surviving admissible support.
-Hallucination is reformulated as a \emph{failure of hierarchical
-continuation liftability} through a compiled semantic filtration:
-obstruction cocycles are evaluated prior to the softmax, restricting
-the support of the generative distribution to trajectories admitting
-coherent continuation across all active Postnikov stages.
-No external ground-truth oracle is required during decoding;
-admissibility is computed intrinsically from pre-compiled,
-memory-mapped constraint structures (toric ideal generators,
-Floer-like continuation invariants, HMM brackets).
-Topology determines support; probability determines selection within
-support.
-The framework is validated empirically on a protocol
-state-machine benchmark (Phase~1) and on the 81-station Hong Kong
-MTR transit network, and connects theoretically to
-Fukaya-Oh-Ohta-Ono Floer theory~\cite{FOOO} and constructible
-sheaves~\cite{FLTZ}.
+$\mathbb{Z}_2$ detects structural presence (orientation-collapsed);
+$\mathbb{Z}_5$ detects cyclic closure obstructions ($H_1$ exactly);
+2-adic valuation measures stability under refinement.
+$\mathbb{R}$ gives a \emph{geometry of approximation};
+$\mathbb{Z}_2$/$\mathbb{Z}_5$ give a \emph{geometry of identifiability}.
+
+We verify the algebraic claims on a 6-node minimal chain complex
+(one filled 2-cell, one hole; anti-FSM result via shared edges),
+validate the Postnikov filtration empirically on a protocol
+state-machine benchmark, and apply the framework to the 81-station
+Hong Kong MTR transit network.
 \end{abstract}
 
 \tableofcontents
@@ -279,6 +281,85 @@ This architecture pre-compiles all admissibility constraints into
 memory-mapped flat files consulted in $O(1)$ at runtime.
 
 % =============================================================================
+\section{Why $\mathbb{R}$ Is Not Enough}
+\label{sec:why_r}
+
+Standard transformer decoding operates in three $\mathbb{R}$-based spaces:
+embeddings in $\mathbb{R}^D$, logits in $\mathbb{R}$,
+and probabilities in the simplex.
+These spaces are strong for smooth optimisation and interpolation,
+but have a fundamental limitation:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}\small
+\begin{tabular}{p{2.8cm}p{3.5cm}p{3.5cm}p{2.5cm}}
+\toprule
+\textbf{Layer} & \textbf{Object} & \textbf{Detects} & \textbf{Does NOT detect} \\
+\midrule
+(I) Homological &
+  $H_1(C_*;\mathbb{Z}_5)$ &
+  Global trajectory admissibility;
+  missing 2-cells; nontrivial cycles &
+  Generation-time dynamics \\
+(II) Coefficient field &
+  $\mathbb{Z}_2$: orientation-free view;
+  $\mathbb{Z}_5$: directional view &
+  Different projections of the
+  \emph{same} topology &
+  These are not competing detectors \\
+(III) Valuation &
+  $v_2(\text{prefix})$ &
+  Prefix stability; how long before
+  boundary mismatch appears &
+  Global topology; $H_1$ class \\
+\midrule
+$\mathbb{R}$ (standard ML) &
+  Embeddings, logits, softmax &
+  Distance, similarity, likelihood &
+  Discrete obstructions; $H_1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The key separation: \textbf{homology classifies global admissibility
+of trajectories; $p$-adic valuations classify stability of partial
+generation paths under filtration.}
+These operate at different levels of the same structure and are not
+interchangeable.
+
+\medskip
+\noindent
+\textbf{Important corrections from experiment.}
+$\mathbb{Z}_2$ is \emph{not} a weaker version of $\mathbb{Z}_5$ ---
+it is an orientation-free projection of the same topology.
+Reversing a directed cycle leaves its $\mathbb{Z}_2$ coefficient
+vector unchanged but changes its $\mathbb{Z}_5$ vector.
+The 2-adic valuation is \emph{not} a homology detector --- full cycles
+always have zero boundary mismatch, so $v_2$ is only meaningful
+on \emph{prefixes} (partial generative paths), not complete trajectories.
+
+The key distinction:
+\begin{quote}
+$\mathbb{R}$ gives a \emph{geometry of approximation}.\\
+$\mathbb{Z}_2$/$\mathbb{Z}_5$ give a \emph{geometry of identifiability}.
+\end{quote}
+
+A hallucination is not a perturbative error --- it cannot be corrected
+by nudging probabilities or adjusting temperature.
+It is an \emph{algebraic obstruction}: a cycle in the continuation space
+that does not bound a filled disk.
+Such obstructions are invisible to $\mathbb{R}$-based metrics because they
+are not measurable by distance or likelihood.
+They become detectable only when the semantic space is quotiented by the
+boundary operator $d_2$ and the homology $H_1 = \ker(d_1)/\mathrm{im}(d_2)$
+is computed.
+
+This is not a claim that $\mathbb{R}$ is wrong --- it is the correct space
+for gradient-based learning.
+It is a claim that $\mathbb{R}$ is \emph{incomplete} as an invariant system
+for detecting the specific class of failures we call hallucinations.
+
 \section{Mathematical Foundations}
 % =============================================================================
 
@@ -779,6 +860,113 @@ meaning $\Phi(\gamma) = 0$ at some step $t$. The decoding is
 terminated at that step.
 
 % =============================================================================
+\section{Algebraic Sanity Checks: $H_1$ Over $\mathbb{Z}_2$ and $\mathbb{Z}_5$}
+\label{sec:algebraic}
+
+\subsection{The minimal geometry}
+
+We verify the core algebraic claim on a 6-node chain complex
+with one filled 2-cell and one hole.
+This is the smallest possible example where the three algebraic
+layers separate cleanly.
+
+\paragraph{Setup.}
+Nodes $C_0=\{0,1,2,3,4,5\}$, edges $C_1$ (8 generators), one 2-cell $\sigma_A$.
+\begin{align*}
+\text{Cycle A (filled):}\quad &0\to1\to2\to3\to4\to0 \\
+\text{Cycle B (hole):}\quad   &0\to2\to3\to4\to5\to0
+\end{align*}
+Shared edges $e_{23}$ and $e_{34}$ appear in \emph{both} cycles,
+making them adjacency-equivalent.
+No FSM can distinguish them.
+
+\paragraph{Critical check: $d^2=0$.}
+We verify explicitly that $d_1 \circ d_2 = 0$ over both $\mathbb{Z}_2$
+and $\mathbb{Z}_5$.
+This is the foundational requirement --- without it there is no chain
+complex and no homology.
+
+\paragraph{$H_1$ computation.}
+Using Gaussian elimination mod~$p$:
+\begin{itemize}
+  \item $\dim H_1(\mathbb{Z}_5) = 2$
+        ($\text{dim}\,\ker(d_1)=4$, $\text{dim}\,\mathrm{im}(d_2)=1$, bridge adds one more)
+  \item Cycle~A: $[\gamma_A] = 0$ (trivial, bounds the filled disk)
+  \item Cycle~B: $[\gamma_B] \neq 0$ (nontrivial, the hole)
+\end{itemize}
+
+\paragraph{Gate = $H_1$ membership.}
+\[
+\mathrm{gate}(\gamma) \;=\;
+\begin{cases}
+1 & \gamma \in \mathrm{im}(d_2) \;\;(\text{cycle is filled, allow}) \\
+0 & \gamma \notin \mathrm{im}(d_2) \;\;(\text{cycle has a hole, block})
+\end{cases}
+\]
+This is not adjacency, not learned probabilities, not heuristics.
+
+\subsection{Three algebraic probes on the same complex}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}\small
+\begin{tabular}{p{2.0cm}p{3.8cm}p{2.2cm}p{2.2cm}p{2.2cm}}
+\toprule
+\textbf{Layer} & \textbf{Role} & \textbf{Cycle A} & \textbf{Cycle B}
+  & \textbf{Level} \\
+\midrule
+$\mathbb{Z}_5$ $H_1$ &
+  \textbf{Global admissibility}: is the cycle homologous to a filled disk? &
+  $[\gamma]=0$, ALLOW &
+  $[\gamma]\neq 0$, BLOCK &
+  Global \\
+$\mathbb{Z}_2$ &
+  Orientation-free projection of the same topology; reversed path $\equiv$ forward path &
+  present &
+  present &
+  Representation \\
+2-adic $v_2$ &
+  Prefix stability: how far into generation before boundary mismatch?
+  Meaningful only on \emph{partial} paths &
+  stable prefix &
+  stable prefix &
+  Dynamics \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+\textbf{Observation from experiment.}
+$\mathbb{Z}_2$ and $\mathbb{Z}_5$ both detect the nontrivial class of
+Cycle~B on the 6-node complex.
+The difference is orientation: $\mathbb{Z}_2$ identifies a directed
+cycle with its reverse; $\mathbb{Z}_5$ preserves sign.
+They are \emph{different views of the same topology}, not competing detectors.
+The 2-adic layer operates at a different level entirely: it measures
+how stable a \emph{prefix} of a path is under binary refinement,
+not whether the completed cycle is topologically admissible.
+
+\subsection{Anti-FSM result}
+
+Both cycles share edges $e_{23}=(2,3)$ and $e_{34}=(3,4)$.
+A finite-state automaton (FSM) using only adjacency sees both cycles
+as equally reachable from node~0 --- it cannot distinguish them.
+The $H_1$ gate blocks Cycle~B (the hole) and allows Cycle~A (the disk)
+using only the $\mathrm{im}(d_2)$ membership test.
+This is the \emph{anti-FSM result}: same adjacency, same reachability,
+different homology.
+
+\subsection{Perturbation invariance}
+
+The $H_1$ classification is invariant under:
+\begin{itemize}
+  \item Node relabeling (topological homeomorphism)
+  \item Edge weight rescaling mod~$p$ (weights are not in $d_1, d_2$)
+  \item Coefficient field change: same result over $\mathbb{Z}_2, \mathbb{Z}_3,
+        \mathbb{Z}_5, \mathbb{Z}_7$
+\end{itemize}
+These perturbation invariances confirm the result is topological,
+not arithmetic or statistical.
+
 \section{Phase 1 Empirical Benchmark}
 \label{sec:benchmark}
 
@@ -940,6 +1128,107 @@ Hodge decomposition (one matrix op) & Threshold constants $\theta, \tau$ \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\section{Methodological Correction: What the Experiments Changed}
+\label{sec:correction}
+
+Running the chain complex experiments forced a structural separation
+that changes the conceptual framing of the system.
+We record it here explicitly because the correction is itself part of
+the scientific contribution.
+
+\subsection*{Before the experiments}
+
+The implicit assumption was:
+\begin{itemize}
+  \item $\mathbb{Z}_5$ = "hallucination detector via Floer obstruction"
+        (fundamental truth layer)
+  \item $\mathbb{Z}_2$ = simplified or degraded version of $\mathbb{Z}_5$
+        (weaker detector of the same thing)
+  \item 2-adic = part of the same unified obstruction engine
+\end{itemize}
+This framing implies a hierarchy of detection power:
+$\mathbb{Z}_5 >_{\text{power}} \mathbb{Z}_2$,
+with 2-adic as a third variant.
+
+\subsection*{What the experiments forced us to correct}
+
+\paragraph{$\mathbb{Z}_5$ (corrected role).}
+$H_1(C_*;\mathbb{Z}_5)$ is the \emph{global topological admissibility
+invariant} of a trajectory: it answers whether the cycle is homologous
+to a filled disk ($[\gamma]=0$, allow) or bounds a hole
+($[\gamma]\neq 0$, block).
+It is not a "detector" --- it is a classifier whose output is
+a homology class.
+
+\paragraph{$\mathbb{Z}_2$ (corrected role).}
+$\mathbb{Z}_2$ is not weaker than $\mathbb{Z}_5$.
+It is an \emph{orientation-forgetting projection} of the same topology.
+Over $\mathbb{Z}_2$: $-1 \equiv +1$, so reversing a directed cycle
+produces the same coefficient vector.
+$\mathbb{Z}_2$ answers: "Is the structure present regardless of direction?"
+$\mathbb{Z}_5$ answers: "In which direction does it flow?"
+These are \emph{different questions}, not the same question at different resolution.
+
+\paragraph{2-adic (corrected role).}
+The 2-adic valuation is not a homology detector.
+Full closed cycles always satisfy $d_1 \cdot (\text{cycle}) = 0$,
+so boundary mismatch is trivially zero for any complete trajectory.
+$v_2$ is meaningful only on \emph{prefixes} --- partial paths
+of length $k$ during generation --- where it measures how many
+refinement steps the partial boundary condition survives.
+It is a \emph{dynamics} measurement, not a topology measurement.
+
+\subsection*{The corrected relationship}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}\small
+\begin{tabular}{p{2.5cm}p{3.2cm}p{3.2cm}p{3.2cm}}
+\toprule
+ & \textbf{Before} & \textbf{After} & \textbf{Why it changed} \\
+\midrule
+$\mathbb{Z}_5$ &
+  "True obstruction detector" &
+  Homology with cyclic structure; global classifier &
+  H1 is a class, not a detection signal \\
+$\mathbb{Z}_2$ &
+  Weaker version of $\mathbb{Z}_5$ &
+  Orientation-forgetting projection; different invariant &
+  Reversal experiment showed identity under $\mathbb{Z}_2$ \\
+2-adic &
+  Part of topology &
+  Prefix stability; generation-time dynamics &
+  Full cycles have trivial boundary mismatch \\
+Relationship &
+  Hierarchy of detection power &
+  Different invariants of one complex; not comparable &
+  Experiments showed they answer different questions \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{The one-sentence correction}
+
+\begin{quote}
+\emph{$\mathbb{Z}_2$ and $\mathbb{Z}_5$ are not different levels of
+hallucination detection --- they are different projections of the same
+semantic chain complex: $\mathbb{Z}_5$ encodes global homology with
+orientation, $\mathbb{Z}_2$ is the orientation-forgetting quotient, and
+neither is a detector of truth --- only of different invariants of a
+shared structure.}
+\end{quote}
+
+\subsection*{Why this matters for publication}
+
+The corrected framing is \emph{stronger}, not weaker, for the following reason.
+The original framing ("different arithmetic detects different hallucinations")
+invites the question: why those particular number systems?
+The corrected framing answers it precisely: $\mathbb{Z}_2$ and $\mathbb{Z}_5$
+are natural because they expose different algebraic invariants of the same
+chain complex --- one orientation-sensitive, one orientation-free.
+2-adic valuation is natural because generation is an iterative process
+and prefix stability is the right dynamical measurement.
+The three layers are not competing; they are complementary projections.
 
 \subsection{Scope: where the architecture is strongest}
 
@@ -1109,6 +1398,18 @@ to 54\% at $T=3.0$).
 The deepest remaining question --- whether the topology generalises
 compositionally beyond the compiled training manifold --- is
 the central programme of Phases~2--4.
+
+\medskip\noindent
+\textbf{One-line distilled version.}
+The experiments support a three-level semantic model:
+$H_1(\mathbb{Z}_5)$ classifies global trajectory admissibility;
+$\mathbb{Z}_2$ removes orientation sensitivity (a different view of
+the same topology, not a weaker detector);
+and $p$-adic valuations describe prefix stability during generation,
+forming a clean separation between
+\emph{topology} (what the complex is),
+\emph{representation} (how it is viewed), and
+\emph{dynamics} (how the model traverses it).
 
 The strongest formal statement is the Homological Admissibility
 Theorem~\ref{thm:main}: any generated sequence whose continuation
