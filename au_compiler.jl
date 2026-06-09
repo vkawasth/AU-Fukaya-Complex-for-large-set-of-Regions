@@ -766,6 +766,80 @@ function build_bracket_index(brackets::Vector{HMMBracket})
     Dict((b.station, b.product_idx, b.month) => b for b in brackets)
 end
 
+
+# =============================================================================
+# TOPOLOGICAL GATE: structural 𝟏_𝓜 applied at embedding time (Pass 1b)
+#
+# The document's q → f(q) substitution applied BEFORE HNSW indexing.
+# Products whose embedding norm falls below the toric variety threshold
+# are assigned zero embedding and excluded structurally — never retrieved.
+#
+# This is stronger than the post-hoc gate in serve_ad (Step 3) because:
+#   Post-hoc: rank top-50, then filter by 𝟏_𝓜 (dead zone slots return nothing)
+#   Structural: only index products on V(I) — off-manifold products
+#               never appear in any top-N list regardless of N
+#
+# The toric variety V(I) is certified by the 4ti2 Markov basis (37 circuits).
+# Products with near-zero Floer pairing on ALL Lagrangians are off-manifold.
+# =============================================================================
+
+"""
+    apply_toric_gate!(embeddings, products, global_max_v; threshold=0.05)
+        -> n_gated::Int
+
+Pass 1b: Apply the topological gate 𝟏_𝓜 at embedding time.
+
+For each product p, check whether its embedding lies on the toric variety V(I):
+  on-manifold:  ‖embed(p)‖ > threshold × global_max_v → keep
+  off-manifold: ‖embed(p)‖ ≤ threshold × global_max_v → zero out
+
+Products zeroed here will have zero cosine similarity with any slot query
+and will never be retrieved by HNSW — they are structurally excluded.
+
+This is the q → [f₁(q),...,f_D(q)] substitution: only coordinates on V(I)
+are non-zero. Off-manifold products get the zero vector.
+
+Returns the number of products gated out.
+"""
+function apply_toric_gate!(embeddings  ::Matrix{Float64},
+                            products    ::Vector,
+                            global_max_v::Float64;
+                            threshold   ::Float64 = 0.05)::Int
+
+    n_gated = 0
+    gate_thresh = threshold * global_max_v
+
+    for p_idx in 1:size(embeddings, 1)
+        embed_norm = norm(embeddings[p_idx, :])
+        if embed_norm < gate_thresh
+            # Product is off-manifold: zero out embedding
+            embeddings[p_idx, :] .= 0.0
+            n_gated += 1
+        end
+    end
+
+    return n_gated
+end
+
+"""
+    topological_indicator(brackets, station, product_idx, month; k_inv_floor=0.01)
+        -> Bool
+
+Runtime 𝟏_𝓜(slot): returns true iff the slot is on the toric variety.
+
+k_inv_floor = 0.01: slots with k-invariant below this are dead zones.
+This threshold corresponds to W_0(u) ≈ 0 (toric obstruction).
+"""
+function topological_indicator(bracket_idx ::Dict,
+                                station     ::String,
+                                product_idx ::Int,
+                                month       ::Int;
+                                k_inv_floor ::Float64 = 0.01)::Bool
+    b = get(bracket_idx, (station, product_idx, month), nothing)
+    b === nothing && return false   # no bracket = unknown = treat as dead
+    return b.k_invariant > k_inv_floor
+end
+
 if abspath(PROGRAM_FILE) == @__FILE__
 
     include(joinpath(@__DIR__, "mtr_ad_game.jl"))

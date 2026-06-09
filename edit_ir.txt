@@ -1,0 +1,7 @@
+ir_program = FkInstruction[
+    AllocLagrangian(adm_idx, 9, 2, :RM, :L_RM),
+    AllocLagrangian(adm_idx, 9, 2, :RF, :L_RF),
+    FloerIntersection(:L_RM, :L_RF, 0.15, :CF_RM_RF),
+    CoproductDelta(adm_idx, 9, 2, 1, [0.8,0.6,0.1,0.05], :delta),
+    ServeAd(adm_idx, 9, 2, 0.7, :result),
+]

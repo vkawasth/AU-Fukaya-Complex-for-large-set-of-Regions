@@ -1,0 +1,24 @@
+{
+  "d_squared_zero": true,
+  "verification_A_accuracy": 1.0,
+  "total_paths_tested": 8,
+  "TP": 0,
+  "TN": 8,
+  "FP": 0,
+  "FN": 0,
+  "gate_results": {
+    "cycle_edge_01": false,
+    "chord_02": false,
+    "path_012": false,
+    "path_0234": false,
+    "full_cycle": false,
+    "triangle_chord": false,
+    "boundary_of_c2_1": false,
+    "loop_A_short": false,
+    "loop_B_via_chord": false
+  },
+  "monodromy_observable": false,
+  "loop_A_class_nonzero": false,
+  "loop_B_class_nonzero": false,
+  "loops_same_class": true
+}
